@@ -73,35 +73,46 @@ struct ContentView: View {
     @FocusState private var isJSONEditorFocused: Bool
 
     var body: some View {
-        TabView {
-            NavigationStack {
-                EditorView(
-                    jsonText: $jsonText,
-                    isFocused: $isJSONEditorFocused,
-                    onGenerate: generatePreview
-                )
-                .navigationTitle("Éditeur JSON")
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Spacer()
-                        Button("Fermer") {
-                            dismissKeyboard()
+        ZStack {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
+
+            TabView {
+                NavigationStack {
+                    EditorView(
+                        jsonText: $jsonText,
+                        isFocused: $isJSONEditorFocused,
+                        onGenerate: generatePreview
+                    )
+                    .navigationTitle("Éditeur JSON")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button("Fermer") {
+                                dismissKeyboard()
+                            }
                         }
                     }
                 }
-            }
-            .tabItem {
-                Label("Éditeur JSON", systemImage: "curlybraces")
-            }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .tabItem {
+                    Label("Éditeur JSON", systemImage: "curlybraces")
+                }
 
-            NavigationStack {
-                LiveRenderView(jsonText: generatedJSON)
-                    .navigationTitle("Rendu Live")
+                NavigationStack {
+                    LiveRenderView(jsonText: generatedJSON)
+                        .navigationTitle("Rendu Live")
+                        .navigationBarTitleDisplayMode(.inline)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .tabItem {
+                    Label("Rendu Live", systemImage: "iphone")
+                }
             }
-            .tabItem {
-                Label("Rendu Live", systemImage: "iphone")
-            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .environmentObject(dynamicState)
     }
 
@@ -118,49 +129,39 @@ struct ContentView: View {
 
 private struct EditorView: View {
     private static let editorMinimumHeight: CGFloat = 300
-    private static let bottomControlsReserve: CGFloat = 120
 
     @Binding var jsonText: String
     var isFocused: FocusState<Bool>.Binding
     let onGenerate: () -> Void
 
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-                    .onTapGesture(perform: dismissKeyboard)
+        ZStack {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
+                .onTapGesture(perform: dismissKeyboard)
 
-                ScrollView {
-                    VStack(spacing: 16) {
-                        TextEditor(text: $jsonText)
-                            .focused(isFocused)
-                            .font(.system(.body, design: .monospaced))
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .scrollContentBackground(.hidden)
-                            .padding(14)
-                            .background(Color(.secondarySystemGroupedBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                    .stroke(Color(.separator).opacity(0.35), lineWidth: 1)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .frame(
-                                height: max(
-                                    Self.editorMinimumHeight,
-                                    proxy.size.height - Self.bottomControlsReserve
-                                )
-                            )
-                            .layoutPriority(1)
+            VStack(spacing: 0) {
+                TextEditor(text: $jsonText)
+                    .focused(isFocused)
+                    .font(.system(.body, design: .monospaced))
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .scrollContentBackground(.hidden)
+                    .padding(14)
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .stroke(Color(.separator).opacity(0.35), lineWidth: 1)
                     }
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .top)
-                }
-                .scrollDismissesKeyboard(.interactively)
+                    .frame(maxWidth: .infinity, minHeight: Self.editorMinimumHeight, maxHeight: .infinity)
+                    .layoutPriority(1)
             }
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .scrollDismissesKeyboard(.interactively)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(spacing: 12) {
                 Divider()
@@ -173,10 +174,10 @@ private struct EditorView: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 16)
             .padding(.top, 8)
             .padding(.bottom, 10)
-            .background(.regularMaterial)
+            .background(.regularMaterial, ignoresSafeAreaEdges: .bottom)
         }
     }
 
@@ -211,6 +212,7 @@ private struct LiveRenderView: View {
                     ScrollView {
                         componentPreview(component, fillsHeight: false)
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scrollDismissesKeyboard(.interactively)
                 }
 
@@ -228,16 +230,18 @@ private struct LiveRenderView: View {
                                 .textSelection(.enabled)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
+                        .padding(16)
                         .background(Color(.secondarySystemGroupedBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     }
-                    .padding()
+                    .padding(.horizontal, 16)
                     .frame(maxWidth: .infinity)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scrollDismissesKeyboard(.interactively)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     @ViewBuilder
@@ -245,11 +249,12 @@ private struct LiveRenderView: View {
         let maxHeight: CGFloat? = fillsHeight ? .infinity : nil
 
         UIInterpreterView(component: component)
-            .padding()
+            .padding(16)
             .frame(maxWidth: .infinity, maxHeight: maxHeight, alignment: .top)
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-            .padding()
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, maxHeight: maxHeight, alignment: .top)
     }
 
     private var decodedComponent: Result<DynamicComponent, Error> {
