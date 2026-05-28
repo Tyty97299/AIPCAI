@@ -9,9 +9,44 @@ targets:
     bundleId: com.vibecloud.aipcai
     sources:
       - AIPCAI
+    info:
+      path: AIPCAI/Info.plist
+      properties:
+        NSAppleMusicUsageDescription: "Accès à la bibliothèque Apple Music et aux médias pour vos mini-apps."
+        NSBluetoothAlwaysUsageDescription: "Utilisation du Bluetooth en continu pour vos mini-apps."
+        NSBluetoothPeripheralUsageDescription: "Utilisation du Bluetooth pour des périphériques externes."
+        NSCalendarsFullAccessUsageDescription: "Accès complet aux calendriers pour vos mini-apps."
+        NSCalendarsWriteOnlyAccessUsageDescription: "Accès pour ajouter des événements au calendrier."
+        NSCameraUsageDescription: "Accès à l'appareil photo pour vos mini-apps."
+        NSContactsUsageDescription: "Accès au carnet de contacts pour vos mini-apps."
+        NSFaceIDUsageDescription: "Utilisation de Face ID pour s'authentifier dans vos mini-apps."
+        NSFallDetectionUsageDescription: "Accès aux données de détection des chutes."
+        NSFocusStatusUsageDescription: "Savoir si un mode de concentration est actif."
+        NSHealthClinicalHealthRecordsShareUsageDescription: "Accès aux dossiers médicaux partagés."
+        NSHealthShareUsageDescription: "Autorisation de lire les données de l'application Santé."
+        NSHealthUpdateUsageDescription: "Autorisation d'ajouter des données dans l'application Santé."
+        NSHomeKitUsageDescription: "Accès pour contrôler les accessoires connectés de la maison."
+        NSLocalNetworkUsageDescription: "Accès au réseau local pour scanner et trouver d'autres appareils."
+        NSLocationAlwaysAndWhenInUseUsageDescription: "Localisation en tâche de fond et quand l'app est active."
+        NSLocationWhenInUseUsageDescription: "Localisation uniquement quand l'app est affichée à l'écran."
+        NSMicrophoneUsageDescription: "Accès au micro pour vos mini-apps."
+        NSMotionUsageDescription: "Accès au coprocesseur de mouvement (accéléromètre, gyroscope)."
+        NSNearbyInteractionUsageDescription: "Interaction de proximité via la puce Ultra Wideband."
+        NSPhotoLibraryUsageDescription: "Accès complet à la photothèque pour vos mini-apps."
+        NSPhotoLibraryAddUsageDescription: "Accès pour sauvegarder des images dans la pellicule."
+        NSRemindersFullAccessUsageDescription: "Accès complet à l'application Rappels."
+        NSSpeechRecognitionUsageDescription: "Autorisation d'utiliser la reconnaissance vocale."
+        NSUserTrackingUsageDescription: "Autorisation de suivi pour les fonctionnalités de vos mini-apps."
+        UIBackgroundModes:
+          - audio
+          - location
+    entitlements:
+      path: AIPCAI/AIPCAI.entitlements
+      properties:
+        com.apple.developer.applesignin: []
+        aps-environment: development
     settings:
       base:
-        GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.vibecloud.aipcai
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: true
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: true
