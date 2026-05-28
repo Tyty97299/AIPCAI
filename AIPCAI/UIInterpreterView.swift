@@ -3,10 +3,12 @@ import SwiftUI
 struct UIInterpreterView: View {
     let component: DynamicComponent
 
+    @EnvironmentObject private var dynamicState: DynamicUIState
     @State private var isShowingButtonAlert = false
 
     var body: some View {
         render(component)
+            .frame(maxWidth: .infinity)
     }
 
     @ViewBuilder
@@ -16,13 +18,19 @@ struct UIInterpreterView: View {
             Text(component.text ?? "")
                 .font(.system(size: component.fontSize ?? 17))
                 .foregroundStyle(color(from: component.color))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
 
         case "button":
-            Button(component.text ?? "Bouton") {
+            Button {
                 isShowingButtonAlert = true
+            } label: {
+                Text(component.text ?? "Bouton")
+                    .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .tint(color(from: component.color))
+            .frame(maxWidth: .infinity)
             .alert("Action déclenchée", isPresented: $isShowingButtonAlert) {
                 Button("OK", role: .cancel) {}
             } message: {
@@ -35,6 +43,41 @@ struct UIInterpreterView: View {
                     UIInterpreterView(component: child)
                 }
             }
+            .frame(maxWidth: .infinity)
+
+        case "hstack":
+            HStack(spacing: 12) {
+                ForEach(component.children ?? []) { child in
+                    UIInterpreterView(component: child)
+                }
+            }
+            .frame(maxWidth: .infinity)
+
+        case "scrollview":
+            ScrollView(.vertical) {
+                VStack(spacing: 16) {
+                    ForEach(component.children ?? []) { child in
+                        UIInterpreterView(component: child)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
+
+        case "image":
+            Image(systemName: component.systemImage ?? "star")
+                .font(.system(size: component.fontSize ?? 44, weight: .semibold))
+                .foregroundStyle(color(from: component.color))
+                .frame(maxWidth: .infinity)
+
+        case "textfield":
+            TextField(
+                component.placeholder ?? "Saisir du texte",
+                text: dynamicState.binding(for: component.id)
+            )
+            .textFieldStyle(.roundedBorder)
+            .textInputAutocapitalization(.sentences)
+            .frame(maxWidth: .infinity)
 
         case "spacer":
             Spacer()
