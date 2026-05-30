@@ -73,46 +73,37 @@ struct ContentView: View {
     @FocusState private var isJSONEditorFocused: Bool
 
     var body: some View {
-        ZStack {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
-
-            TabView {
-                NavigationStack {
-                    EditorView(
-                        jsonText: $jsonText,
-                        isFocused: $isJSONEditorFocused,
-                        onGenerate: generatePreview
-                    )
-                    .navigationTitle("Éditeur JSON")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
-                            Button("Fermer") {
-                                dismissKeyboard()
-                            }
+        TabView {
+            NavigationStack {
+                EditorView(
+                    jsonText: $jsonText,
+                    isFocused: $isJSONEditorFocused,
+                    onGenerate: generatePreview
+                )
+                .navigationTitle("Éditeur JSON")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Fermer") {
+                            dismissKeyboard()
                         }
                     }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .tabItem {
-                    Label("Éditeur JSON", systemImage: "curlybraces")
-                }
-
-                NavigationStack {
-                    LiveRenderView(jsonText: generatedJSON)
-                        .navigationTitle("Rendu Live")
-                        .navigationBarTitleDisplayMode(.inline)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .tabItem {
-                    Label("Rendu Live", systemImage: "iphone")
-                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .tabItem {
+                Label("Éditeur JSON", systemImage: "curlybraces")
+            }
+
+            NavigationStack {
+                LiveRenderView(jsonText: generatedJSON)
+                    .navigationTitle("Rendu Live")
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .tabItem {
+                Label("Rendu Live", systemImage: "iphone")
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .environmentObject(dynamicState)
     }
 
@@ -206,11 +197,15 @@ private struct LiveRenderView: View {
             switch decodedComponent {
             case .success(let component):
                 if component.type.lowercased() == "scrollview" {
-                    componentPreview(component, fillsHeight: true)
+                    UIInterpreterView(component: component)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                        .padding(.horizontal, 16)
                         .scrollDismissesKeyboard(.interactively)
                 } else {
                     ScrollView {
-                        componentPreview(component, fillsHeight: false)
+                        UIInterpreterView(component: component)
+                            .frame(maxWidth: .infinity, alignment: .top)
+                            .padding(.horizontal, 16)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scrollDismissesKeyboard(.interactively)
@@ -242,19 +237,6 @@ private struct LiveRenderView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    @ViewBuilder
-    private func componentPreview(_ component: DynamicComponent, fillsHeight: Bool) -> some View {
-        let maxHeight: CGFloat? = fillsHeight ? .infinity : nil
-
-        UIInterpreterView(component: component)
-            .padding(16)
-            .frame(maxWidth: .infinity, maxHeight: maxHeight, alignment: .top)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-            .padding(.horizontal, 16)
-            .frame(maxWidth: .infinity, maxHeight: maxHeight, alignment: .top)
     }
 
     private var decodedComponent: Result<DynamicComponent, Error> {

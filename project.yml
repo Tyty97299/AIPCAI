@@ -12,6 +12,7 @@ targets:
     info:
       path: AIPCAI/Info.plist
       properties:
+        UILaunchScreen: {}
         NSAppleMusicUsageDescription: "Accès à la bibliothèque Apple Music et aux médias pour vos mini-apps."
         NSBluetoothAlwaysUsageDescription: "Utilisation du Bluetooth en continu pour vos mini-apps."
         NSBluetoothPeripheralUsageDescription: "Utilisation du Bluetooth pour des périphériques externes."
